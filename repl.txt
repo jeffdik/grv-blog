@@ -1,0 +1,582 @@
+; CIDER 0.7.0alpha (package: 20140430.838) (Java 1.7.0_51, Clojure 1.6.0, nREPL 0.2.3)
+user> 
+#<Namespace grv.blog>
+grv.blog> (pprint {:a 1 :b 2})
+{:b 2, :a 1}
+nil
+grv.blog> (pp/pprint {:a 1 :b 2})
+{:b 2, :a 1}
+nil
+grv.blog> (Date.)
+CompilerException java.lang.IllegalArgumentException: Unable to resolve classname: Date, compiling:(/private/var/folders/9x/l66nlwgj4rq_d8906pk0wsh00000gn/T/form-init260092690325569083.clj:1:1) 
+grv.blog> (Date.)
+#inst "2014-05-01T22:53:20.056-00:00"
+grv.blog> (add-post nil {:title "Title" :body "Body"})
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: add-post in this context, compiling:(/private/var/folders/9x/l66nlwgj4rq_d8906pk0wsh00000gn/T/form-init260092690325569083.clj:1:1) 
+grv.blog> (add-post nil {:title "Title" :body "Body"})
+({:body "Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"})
+grv.blog> (def blog *1)
+#'grv.blog/blog
+grv.blog> blog
+({:body "Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"})
+grv.blog> (edit-post blog 0 {:body "Editted Body"})
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: edit-post in this context, compiling:(/private/var/folders/9x/l66nlwgj4rq_d8906pk0wsh00000gn/T/form-init260092690325569083.clj:1:1) 
+grv.blog> (edit-post blog 0 {:body "Editted Body"})
+ClassCastException clojure.lang.PersistentList cannot be cast to clojure.lang.Associative  clojure.lang.RT.assoc (RT.java:702)
+grv.blog> (def blog (vec blog))
+#'grv.blog/blog
+grv.blog> blog
+[{:body "Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"}]
+grv.blog> (edit-post blog 0 {:body "Editted Body"})
+[{:body "Editted Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"}]
+grv.blog> (edit-post blog 1 {:body "Editted Body"})
+[{:body "Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"} {:body "Editted Body"}]
+grv.blog> blog
+[{:body "Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"}]
+grv.blog> (edit-post blog 1 {:body "Editted Body"})
+IndexOutOfBoundsException   clojure.lang.PersistentVector.arrayFor (PersistentVector.java:107)
+grv.blog> (edit-post blog 0 {:body "Editted Body"})
+[{:body "Editted Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"}]
+grv.blog> (delete-post blog 0)
+ClassCastException clojure.lang.PersistentVector cannot be cast to clojure.lang.IPersistentMap  clojure.lang.RT.dissoc (RT.java:758)
+grv.blog> (delete-post blog 0)
+[nil]
+grv.blog> (delete-post blog 1)
+[{:body "Body", :title "Title", :index 0, :time #inst "2014-05-01T22:53:53.811-00:00"} nil]
+grv.blog> (delete-post blog 1)
+IndexOutOfBoundsException   clojure.lang.PersistentVector.arrayFor (PersistentVector.java:107)
+grv.blog> (mock/request :get "/blog")
+CompilerException java.lang.RuntimeException: No such namespace: mock, compiling:(/private/var/folders/9x/l66nlwgj4rq_d8906pk0wsh00000gn/T/form-init260092690325569083.clj:1:1) 
+grv.blog> (require '[ring-mock.core :as mock])
+FileNotFoundException Could not locate ring_mock/core__init.class or ring_mock/core.clj on classpath:   clojure.lang.RT.load (RT.java:443)
+grv.blog> (require '[ring.mock.request :as mock])
+nil
+grv.blog> (mock/request :get "/blog")
+{:server-port 80, :server-name "localhost", :remote-addr "localhost", :uri "/blog", :query-string nil, :scheme :http, :request-method :get, :headers {"host" "localhost"}}
+grv.blog> (mock/request :get "/blog")
+{:server-port 80,
+ :server-name "localhost",
+ :remote-addr "localhost",
+ :uri "/blog",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get,
+ :headers {"host" "localhost"}}
+grv.blog> (always-successful-hander (mock/request :get "/blog"))
+{:status 200, :body "Happy Times!"}
+grv.blog> (require '[org.httpkit.server :as srv])
+nil
+grv.blog> (def stop (srv/run-server always-successful-hander :port 8080))
+ArityException Wrong number of args (3) passed to: server/run-server  clojure.lang.AFn.throwArity (AFn.java:429)
+grv.blog> (def stop (srv/run-server always-successful-hander {:port 8080}))
+#<Var@11e2a06b: 
+  #<server$run_server$stop_server__5058 org.httpkit.server$run_server$stop_server__5058@32fdff4f>>
+grv.blog> (require '[org.httpkit.client :as http])
+nil
+grv.blog> (http/get "http://localhost:8080")
+#<Promise@30cf5899: :not-delivered>
+grv.blog> @*1
+{:opts {:url "http://localhost:8080", :method :get},
+ :body #<BytesInputStream BytesInputStream[len=12]>,
+ :headers
+ {:server "http-kit",
+  :date "Thu, 01 May 2014 23:11:37 GMT",
+  :content-length "12"},
+ :status 200}
+grv.blog> (slurp (:body *1))
+"Happy Times!"
+grv.blog> (wrap-params identity)
+#<params$wrap_params$fn__2663 ring.middleware.params$wrap_params$fn__2663@471d4af7>
+grv.blog> (identity :anything)
+:anything
+grv.blog> ((wrap-params identity) (mock/request :get "/?foo=bar"))
+{:remote-addr "localhost",
+ :params {"foo" "bar"},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {"foo" "bar"},
+ :uri "/",
+ :server-name "localhost",
+ :query-string "foo=bar",
+ :scheme :http,
+ :request-method :get}
+grv.blog> ((wrap-params (wrap-keyword-params identity)) (mock/request :get "/?foo=bar"))
+{:remote-addr "localhost",
+ :params {:foo "bar"},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {"foo" "bar"},
+ :uri "/",
+ :server-name "localhost",
+ :query-string "foo=bar",
+ :scheme :http,
+ :request-method :get}
+grv.blog> ((wrap-params (wrap-keyword-params identity)) (mock/request :post "/?foo=bar" {:a 1}))
+{:remote-addr "localhost",
+ :params {:foo "bar", :a "1"},
+ :headers
+ {"content-length" "3",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 3,
+ :form-params {"a" "1"},
+ :query-params {"foo" "bar"},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/",
+ :server-name "localhost",
+ :query-string "foo=bar",
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@26db0d92>,
+ :scheme :http,
+ :request-method :post}
+grv.blog> @(http/post "http://localhost:8080/blog" {:body "title=Title+1&body=Body+1"})
+{:opts
+ {:url "http://localhost:8080/blog",
+  :method :post,
+  :body "title=Title+1&body=Body+1"},
+ :body #<BytesInputStream BytesInputStream[len=12]>,
+ :headers
+ {:server "http-kit",
+  :date "Thu, 01 May 2014 23:22:19 GMT",
+  :content-length "12"},
+ :status 200}
+grv.blog> (slurp (:body *1))
+"Happy Times!"
+grv.blog> (stop)
+nil
+grv.blog> (def stop (srv/run-server #'blog-handler {:port 8080}))
+#<Var@11e2a06b: 
+  #<server$run_server$stop_server__5058 org.httpkit.server$run_server$stop_server__5058@53a3a6c6>>
+grv.blog> @(http/post "http://localhost:8080/blog" {:body "title=Title+1&body=Body+1"})
+{:opts
+ {:url "http://localhost:8080/blog",
+  :method :post,
+  :body "title=Title+1&body=Body+1"},
+ :body "{:index 0, :time #inst \"2014-05-01T23:25:29.504-00:00\"}",
+ :headers
+ {:server "http-kit",
+  :date "Thu, 01 May 2014 23:25:29 GMT",
+  :content-type "application/edn",
+  :content-length "55"},
+ :status 201}
+grv.blog> @blog-atom
+[{:index 0, :time #inst "2014-05-01T23:25:29.504-00:00"}]
+grv.blog> (stop)
+nil
+grv.blog> (swap! blog-atom pop)
+[]
+grv.blog> (blog-app (mock/request :post "/blog" {:title "Title 1" :body "Body 1"}))
+New Request ( #inst "2014-05-01T23:30:05.058-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body 1", :title "Title 1"},
+ :headers
+ {"content-length" "25",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 25,
+ :form-params {"body" "Body 1", "title" "Title 1"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@2a471d03>,
+ :scheme :http,
+ :request-method :post}
+
+{:status 201,
+ :headers {"content-type" "application/edn"},
+ :body
+ [{:title "Title 1",
+   :body "Body 1",
+   :index 0,
+   :time #inst "2014-05-01T23:30:05.078-00:00"}]}
+grv.blog> (swap! blog-atom pop)
+[]
+grv.blog> (blog-app (mock/request :post "/blog" {:title "Title 1" :body "Body 1"}))
+New Request ( #inst "2014-05-01T23:30:29.449-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body 1", :title "Title 1"},
+ :headers
+ {"content-length" "25",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 25,
+ :form-params {"body" "Body 1", "title" "Title 1"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@567f3311>,
+ :scheme :http,
+ :request-method :post}
+
+{:status 201,
+ :headers {"content-type" "application/edn"},
+ :body
+ "[{:title \"Title 1\", :body \"Body 1\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"}]"}
+grv.blog> (re-find #"/blog/(\d+)" "/blog/1")
+["/blog/1" "1"]
+grv.blog> (blog-app (mock/request :get "/blog/0"))
+New Request ( #inst "2014-05-01T23:34:03.212-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:title \"Title 1\", :body \"Body 1\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"}"}
+grv.blog> (blog-app (mock/request :get "/blog/1"))
+New Request ( #inst "2014-05-01T23:34:17.744-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/1",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+IndexOutOfBoundsException   clojure.lang.PersistentVector.arrayFor (PersistentVector.java:107)
+grv.blog> (blog-app (mock/request :get "/blog/1"))
+New Request ( #inst "2014-05-01T23:35:00.708-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/1",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 404, :body "Not found"}
+grv.blog> (blog-app (mock/request :put "/blog/1" {:body "Body Editted"}))
+New Request ( #inst "2014-05-01T23:37:53.804-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body Editted"},
+ :headers
+ {"content-length" "17",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 17,
+ :form-params {"body" "Body Editted"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog/1",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@68275748>,
+ :scheme :http,
+ :request-method :put}
+
+ArityException Wrong number of args (2) passed to: blog/edit-post  clojure.lang.AFn.throwArity (AFn.java:429)
+grv.blog> (blog-app (mock/request :put "/blog/1" {:body "Body Editted"}))
+New Request ( #inst "2014-05-01T23:38:11.881-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body Editted"},
+ :headers
+ {"content-length" "17",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 17,
+ :form-params {"body" "Body Editted"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog/1",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@275aa868>,
+ :scheme :http,
+ :request-method :put}
+
+{:status 404, :body "Not found"}
+grv.blog> (blog-app (mock/request :put "/blog/0" {:body "Body Editted"}))
+New Request ( #inst "2014-05-01T23:38:16.731-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body Editted"},
+ :headers
+ {"content-length" "17",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 17,
+ :form-params {"body" "Body Editted"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@625d5633>,
+ :scheme :http,
+ :request-method :put}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:title \"Title 1\", :body \"Body Editted\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"}"}
+grv.blog> (comp-app (mock/request :post "/blog" {:title "Title 2" :body "Body 2"}))
+New Request ( #inst "2014-05-01T23:43:14.029-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body 2", :title "Title 2"},
+ :headers
+ {"content-length" "25",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 25,
+ :form-params {"body" "Body 2", "title" "Title 2"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@1ebc7428>,
+ :scheme :http,
+ :request-method :post}
+
+{:status 201,
+ :headers {"content-type" "application/edn"},
+ :body
+ "[{:title \"Title 1\", :body \"Body Editted\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"} {:body \"Body 2\", :title \"Title 2\", :index 1, :time #inst \"2014-05-01T23:43:14.051-00:00\"}]"}
+grv.blog> (comp-app (mock/request :get "/blog/foo"))
+New Request ( #inst "2014-05-01T23:45:31.458-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/foo",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+nil
+grv.blog> (comp-app (mock/request :get "/blog/1"))
+New Request ( #inst "2014-05-01T23:45:44.206-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/1",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:body \"Body 2\", :title \"Title 2\", :index 1, :time #inst \"2014-05-01T23:43:14.051-00:00\"}"}
+grv.blog> (comp-app (mock/request :get "/blog/1"))
+New Request ( #inst "2014-05-01T23:47:58.371-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/1",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:body \"Body 2\", :title \"Title 2\", :index 1, :time #inst \"2014-05-01T23:43:14.051-00:00\"}"}
+grv.blog> (comp-app (mock/request :get "/blog/100"))
+New Request ( #inst "2014-05-01T23:48:01.988-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/100",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+IndexOutOfBoundsException   clojure.lang.PersistentVector.arrayFor (PersistentVector.java:107)
+grv.blog> (comp-app (mock/request :get "/blog/100"))
+New Request ( #inst "2014-05-01T23:49:06.734-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/100",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 404, :body "Not found"}
+grv.blog> (comp-app (mock/request :put "/blog/0" {:body "Body 1 Editted Again"}))
+New Request ( #inst "2014-05-01T23:51:54.685-00:00" ):
+{:remote-addr "localhost",
+ :params {:body "Body 1 Editted Again"},
+ :headers
+ {"content-length" "25",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 25,
+ :form-params {"body" "Body 1 Editted Again"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@2347620b>,
+ :scheme :http,
+ :request-method :put}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:title nil, :body \"Body 1 Editted Again\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"}"}
+grv.blog> (comp-app (mock/request :put "/blog/0" {:title "Title 1"}))
+New Request ( #inst "2014-05-01T23:54:22.254-00:00" ):
+{:remote-addr "localhost",
+ :params {:title "Title 1"},
+ :headers
+ {"content-length" "13",
+  "content-type" "application/x-www-form-urlencoded",
+  "host" "localhost"},
+ :server-port 80,
+ :content-length 13,
+ :form-params {"title" "Title 1"},
+ :query-params {},
+ :content-type "application/x-www-form-urlencoded",
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :body #<ByteArrayInputStream java.io.ByteArrayInputStream@2fe90cff>,
+ :scheme :http,
+ :request-method :put}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:id \"0\", :title \"Title 1\", :body \"Body 1 Editted Again\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"}"}
+grv.blog> (comp-app (mock/request :delete "/blog/0"))
+New Request ( #inst "2014-05-01T23:55:42.235-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :delete}
+
+nil
+grv.blog> (comp-app (mock/request :get "/blog/0"))
+New Request ( #inst "2014-05-01T23:55:59.905-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body
+ "{:id \"0\", :title \"Title 1\", :body \"Body 1 Editted Again\", :index 0, :time #inst \"2014-05-01T23:30:29.471-00:00\"}"}
+grv.blog> @blog-atom
+[{:id "0",
+  :title "Title 1",
+  :body "Body 1 Editted Again",
+  :index 0,
+  :time #inst "2014-05-01T23:30:29.471-00:00"}
+ {:body "Body 2",
+  :title "Title 2",
+  :index 1,
+  :time #inst "2014-05-01T23:43:14.051-00:00"}]
+grv.blog> (comp-app (mock/request :delete "/blog/0"))
+New Request ( #inst "2014-05-01T23:58:09.731-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :delete}
+
+{:status 200, :headers {}, :body ""}
+grv.blog> (comp-app (mock/request :get "/blog/0"))
+New Request ( #inst "2014-05-01T23:58:18.103-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 200, :headers {"content-type" "application/edn"}, :body "nil"}
+grv.blog> (comp-app (mock/request :get "/blog/0"))
+New Request ( #inst "2014-05-01T23:59:15.847-00:00" ):
+{:remote-addr "localhost",
+ :params {},
+ :headers {"host" "localhost"},
+ :server-port 80,
+ :form-params {},
+ :query-params {},
+ :uri "/blog/0",
+ :server-name "localhost",
+ :query-string nil,
+ :scheme :http,
+ :request-method :get}
+
+{:status 200,
+ :headers {"content-type" "application/edn"},
+ :body "{:status 404}"}
+grv.blog> 
